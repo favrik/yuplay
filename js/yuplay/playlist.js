@@ -1,10 +1,12 @@
 (function () {
-    var global = this;
+
+
+    "use strict";
 
     /** Class: yuplay_playlist
      *  YuPlay playlist widget.
      */
-    global.yuplay_playlist = function (options) {
+    var yuplay_playlist = function () {
         /** PrivateVariables: yuplay_playlist variables
          *
          *  container - jQuery DOM Element that contains the playlist.
@@ -13,14 +15,10 @@
          *  items - Array holding the video items that will be called when 
          *    player becomes ready.
          */
-        var container = options.container,
-            playlist = options.playlist,
+        var container = null,
+            playlist  = null,
             toggle    = false,
-            items     = [];
-
-        playlist.click(function (e) {
-            console.info($(e.target).get(0).id);
-        });
+            items     = [],
 
         /** PrivateFunction: in_list
          *  Check if an item is inside the playlist.
@@ -34,16 +32,18 @@
          *  Returns:
          *      true if needle is inside the haystack, false otherwise.
          */
-        var in_list = function (needle, haystack) {
-            var result = false;
-            for (var i = 0; i < haystack.length; i++) {
-                if (needle == haystack[i].url) {
+        in_list = function (needle, haystack) {
+            var result = false,
+                i;
+
+            for (i = 0; i < haystack.length; i++) {
+                if (needle === haystack[i].url) {
                     result = true;
                     break;
                 }
             }
             return result;
-        };
+        },
 
         /** PrivateFunction: _add
          *  Add an item to the playlist.
@@ -51,21 +51,26 @@
          *  Parameters:
          *      (Integer) video - The video information object.
          */
-        var _add = function (video) {
-            if (items.length == 0) {
+        _add = function (video) {
+            if (items.length === 0) {
                 // Doing this because we initialize the playlist with an Action message
                 playlist.empty();
                 container.show();
             }
+
             if (!in_list(video.url, items)) {
-                var class_li = toggle ? {className:'alter'} : {};
+                var class_li = toggle ? {className: 'alter'} : {},
+                    dom = null;
+                
                 class_li.id = 'pl' + items.length;
                 toggle = !toggle;
+                
                 items.push(video);
-                var dom = $.LI(class_li, video.title);
+                
+                dom = $.LI(class_li, video.title);
                 playlist.append(dom);
             }
-        };
+        },
 
         /** PrivateFunction: _remove
          *  Handles.
@@ -73,9 +78,9 @@
          *  Parameters:
          *      (Integer) state - The player state (playing, buffering, etc.).
          */
-        var _remove = function (video_id) {
+        _remove = function (video_id) {
             for (var i = 0; i < items.length; i++) {
-                if (items[i] == video_id) {
+                if (items[i] === video_id) {
                     items.splice(i, 1);
                 }
             }
@@ -84,6 +89,15 @@
 
         // Public instance methods
         return {
+            init: function (options) {
+                container = options.container;
+                playlist = options.playlist;
+
+                playlist.click(function (e) {
+                    console.info($(e.target).get(0).id);
+                });
+            },
+
             add: function (video) {
                 _add(video);
             },
@@ -93,7 +107,7 @@
             },
 
             get: function (position) { 
-                if (items[position] != undefined) { 
+                if (items[position] !== undefined) { 
                     return items[position];
                 }
                 return false;
@@ -113,5 +127,9 @@
             }
         };
     };
+
+    yuplay = yuplay || {};
+    yuplay.playlist = yuplay_playlist();
+
 
 })();

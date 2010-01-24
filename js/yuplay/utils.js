@@ -47,43 +47,38 @@
 
 
     /** Status Messages Widget **/
-    global.yuplay_app_messages = function (options) {
-        var container = options.container;
+    global.app_messages = function (options) {
+        var container = options.container,
 
         /** PrivateFunction: change_text
          *
          *  Parameters:
          *      (String) text - The new text of the message container.
          */
-        var change_text = function (text) {
-            container.find('p').empty();
-            container.find('p').append(text);
+        change_text = function (text) {
+            container.find('p').empty().append(text);
         };
 
         return {
             show: function (text) {
                 change_text(text);
-                container.show();
-                container.find('img').show();
+                container.show().find('img').show();
             },
 
             finish: function (text) { 
-                //replace_text(text); 
-                //icon.hide(); 
                 container.hide();
             },
 
             message: function (text) {
                 change_text(text);
-                container.show();
-                container.find('img').hide();
+                container.show().find('img').hide();
             },
 
-            hide:    function ()     { 
+            hide: function () {
                 container.hide(); 
             },
 
-            update:  function (text) {
+            update: function (text) {
                 change_text(text); 
             }
         };

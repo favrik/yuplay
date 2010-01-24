@@ -17,10 +17,6 @@ if (isset($_GET['tests']) and $_GET['tests'] == 1) {
 <link rel="stylesheet" type="text/css" href="<?php echo $cssUri; ?>" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>YuPlay: search YouTube videos, create playlists, and play!</title>
-<?php if ($testing): ?>
-    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/logger/assets/logger.css" />
-    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/yuitest/assets/testlogger.css" />
-<?php endif; ?>
 </head>
 <body>
 <div id="wrapper" class="clearfix">
@@ -75,13 +71,23 @@ if (isset($_GET['tests']) and $_GET['tests'] == 1) {
     <p>I'm very sorry to not support browsers without javascript. :'(</p>
 </noscript>
 <?php if ($testing): ?>
-    <script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/logger/logger-min.js"></script>
-    <script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/yuitest/yuitest-min.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/jquery/jquery-1.4.min.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/jquery/jquery-dom.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/jquery/jquery.json-1.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/swfobject/swfobject.js"></script>
+
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/yuplay.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/playlist.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/player.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/search.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/search_results.js"></script>
+    <script type="text/javascript" src="<?php echo $wp; ?>js/yuplay/utils.js"></script>
+<?php else: ?>
+    <script type="text/javascript" src="<?php echo $jsUri; ?>"></script>
 <?php endif; ?>
-<script type="text/javascript" src="<?php echo $jsUri; ?>"></script>
+
 <?php if ($testing): ?>
-<script type="text/javascript" src="<?php echo $wp; ?>tests/yuplay.js"></script>
 <?php endif; ?>
+
 </body>
 </html>

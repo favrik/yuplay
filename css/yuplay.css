@@ -240,6 +240,11 @@ label {
     font-size:          .9em;
 }
 
+
+#intro {
+    padding-bottom:20px;
+}
+
 #search {
     padding:            2px 3px;
     width:              30.4em;
@@ -247,10 +252,12 @@ label {
 
 h1 {
     float:left;
+    width:3.8em;
+
 }
 
 #form {
-    float:right;
+    float:left;
     margin-left: 6.25em;
     width:35.9375em;
 }

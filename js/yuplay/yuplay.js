@@ -13,7 +13,9 @@ if (! ("console" in window) || !("firebug" in console)) {
     }
 }
 
-/** Class: yuplay
+(function () {
+
+/** Global Class: yuplay
  *  YuPlay application controller.
  *
  *  The application is started by calling the *init* method.  It holds the
@@ -21,7 +23,7 @@ if (! ("console" in window) || !("firebug" in console)) {
  *  This class is focused on searching videos, processing the search results,
  *  and attaching behavior to each result item.
  */
-var yuplay = {
+yuplay = {
     /** PrivateConstants: configuration constants
      *  Run-time configuration constants.
      *
@@ -67,21 +69,23 @@ var yuplay = {
         yuplay.results_container = options.results_container;
 
         // Setup Utilities
-        yuplay.loading_animation = yuplay_app_messages(options.app_messages);
+        yuplay.loading_animation = app_messages(options.app_messages);
         yuplay.time_out = time_out();
 
-        // Create play list
-        yuplay.playlist = yuplay_playlist({
+        // Init play list
+        yuplay.playlist.init({
             playlist:  options.playlist,
             container: options.playlist_container
         });
 
-        // Create player
-        yuplay.player = yuplay_player({
+        // Init player
+        yuplay.player.init({
             yp_id:     options.player_id,
             playlist:  yuplay.playlist,
             container: $('#player'),
-            buttons:   options.player_buttons
+            buttons:   options.player_buttons,
+            status_update_callback: 'on_state_change',
+            error_callback: 'on_error'
         });
 
         // setup Flash chromeless player
@@ -113,6 +117,7 @@ var yuplay = {
             if (type == 'a') {
                 data = $(e.target).data('yv');
             }
+
             if (type == 'img') {
                 data = $(e.target.parentNode.parentNode).find('a').data('yv');
             }
@@ -505,6 +510,9 @@ var yuplay = {
     }
 };
 
+})();
+
+
 /** Function: onYouTubePlayerReady
  *  Called when the Youtube Flash Player has been loaded.
  *
@@ -515,11 +523,30 @@ function onYouTubePlayerReady(playerId) {
     yuplay.start();
 }
 
+/** Function: on_state_change
+ *  Called on each Youtube Flash Player update.
+ *
+ *  Parameters: 
+ *      (Integer) state - The state code of the player, the state can be
+ *        playing, buffering, paused, etc.
+ */
+function on_state_change(state) {
+    console.log(state);
+    yuplay.player.update(state);
+}
+
+/** Function: on_error
+ *  Called when there is an error on the Youtube player.
+ *
+ *  Parameters:
+ *      error - Error code.
+ */
+function on_error(error) {
+    console.error(error); 
+}
 
 /** Load Application **/
 $(function () {
-
-    // Configuration
     var options = {
         form:               $('#yuplay'),
         input:              $('#search'),
@@ -548,7 +575,5 @@ $(function () {
 
     // Initialization
     yuplay.init(options);
-
     // App is started when the YT player is ready, See above.
-
-})
+});

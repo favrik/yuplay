@@ -1,31 +1,12 @@
-/** Function: on_state_change
- *  Called on each Youtube Flash Player update.
- *
- *  Parameters: 
- *      (Integer) state - The state code of the player, the state can be
- *        playing, buffering, paused, etc.
- */
-function on_state_change(state) {
-    yuplay.player.update(state);
-}
-
-/** Function: on_error
- *  Called when there is an error on the Youtube player.
- *
- *  Parameters:
- *      error - Error code.
- */
-function on_error(error) {
-    console.error(error); 
-}
-
 (function () {
-    var global = this;
+
+
+    "use strict";
 
     /** Class: yuplay_player
      *  Youtube video player widget.
      */
-    global.yuplay_player = function (options) {
+    var yuplay_player = function () {
         /** PrivateVariables: yuplay_player variables
          *
          *  yp - Youtube Player id.
@@ -35,61 +16,41 @@ function on_error(error) {
          *  callbacks - Array holding the funtions that will be called when 
          *    player becomes ready.
          */
-        var yp                  = options.yp_id,
-            container           = options.container,
-            playlist            = options.playlist,
-            current             = null,
-            on_ready_callbacks  = [], // they will be called when the player becomes ready!
-            State = {
-                ENDED:      0, // STOPPED
-                READY:     -1, // or unstarted
-                BUFFERING:  3, // Sometimes it says playing, while it's really buffering
-                PLAYING:    1,
-                PAUSED:     2,
-                QUEUED:     5
-            },
-            Register = {
-               STOPPED: false,
-               INTERRUPTED: false
-            };
+        this.yp = null;
+        this.container = null;
+        this.playlist = null;
+        this.current = 0;
+        this.on_status_update_callback = function () {};
+        this.on_error_callback = function () {};
+        this.on_ready_callbacks = []; // they will be called when the player becomes ready!
+        this.State = {
+            ENDED:      0, // STOPPED
+            READY:     -1, // or unstarted
+            BUFFERING:  3, // Sometimes it says playing, while it's really buffering
+            PLAYING:    1,
+            PAUSED:     2,
+            QUEUED:     5
+        };
+        this.Register = {
+           STOPPED: false,
+           INTERRUPTED: false
+        };
+    };
 
-        var attach_events = (function (buttons) {
+    yuplay_player.prototype = {
+        attach_events: function (buttons) {
+            var context = this;
+
             // Setup Play Button event
             buttons.play.click(function () {
-                on_ready_callbacks.push(function () {
-                    controls.play_all();
-                });
+                context.on_ready_callbacks.push(context.play_all);
             });
 
-            buttons.stop.click(function () {
-                controls.stop();
-            });
-
-            buttons.next.click(function () {
-                controls.next();
-            });
-
-            buttons.prev.click(function () {
-                controls.prev();
-            });
-        
-            buttons.full.click(function () {
-                yp.setSize(400, 300);
-            });
-
-         })(options.buttons);
-
-        /** PrivateFunction: setup
-         *  Setups the player.
-         *
-         *  Initializes the Youtube Player object, and adds the StateChange
-         *    event.
-         */
-        var setup = function () {
-            yp = document.getElementById(yp);
-            yp.addEventListener("onStateChange", "on_state_change");
-            yp.addEventListener("onError", "on_error");
-        };
+            buttons.stop.click(function () { context.stop(); });
+            buttons.next.click(function () { context.next(); });
+            buttons.prev.click(function () { context.prev(); });
+            buttons.full.click(function () { context.yp.setSize(400, 300); });
+        }, 
 
         /** PrivateFunction: status_quo
          *  Handles the state of the player.
@@ -101,33 +62,34 @@ function on_error(error) {
          *  Parameters:
          *      (Integer) state - The player state (playing, buffering, etc.).
          */
-        var status_quo = function (state) {
-            log_state(state);
+        status_quo: function (state) {
+            this.log_state(state);
 
-            if (state == State.ENDED 
-                && !Register.INTERRUPT && !Register.STOPPED) { // ENDED
-                controls.next(); 
+            if (state === this.State.ENDED 
+                && !this.Register.INTERRUPT && !this.Register.STOPPED) { // ENDED
+                this.next(); 
             }
 
-            if (state == State.READY) { // READY, but really unstarted
-                for (var i = 0; i < on_ready_callbacks.length; i++) {
-                    on_ready_callbacks[i]();
+            if (state === this.State.READY) { // READY, but really unstarted
+                for (var i = 0; i < this.on_ready_callbacks.length; i++) {
+                    this.on_ready_callbacks[i]();
                 }
-                setup_new_play_all_click();
+
+                this.setup_new_play_all_click();
             }
 
-            if (state == State.PLAYING) {
-                Register.INTERRUPT = false;
+            if (state === this.State.PLAYING) {
+                this.Register.INTERRUPT = false;
             }
-        };
+        },
 
-        var log_state = function (state) {
-            for (var st in State) {
-                if (State[st] == state) {
+        log_state: function (state) {
+            for (var st in this.State) {
+                if (this.State[st] === state) {
                     console.info('Player state: ' + state + ' ' + st);
                 }
             }
-        }
+        },
 
         /** PrivateFunction: setup_new_play_all_click
          *  Hacked-up function to replace the Play button click event.
@@ -137,104 +99,90 @@ function on_error(error) {
          *  first time you click the Play button, it doesn't try to play the
          *  video immediatly, but when the player is ready.
          */
-        var setup_new_play_all_click = function () {
-            var button = $('#play_b');
-            button.unbind('click');
-            button.click(function () {
-                controls.play_all();
-            });
-        };
+        setup_new_play_all_click: function () {
+            var context = this;
+            $('#play_b').unbind('click').click(function () { context.play_all(); });
+        },
 
-        /** PrivateClass: controls
-         *  Player controls logic inside.
-         */
-        var controls = {
-            play: function (video) {
-                console.log('playing: '+ current + ' ' + video.id);
-                if (yp) {
-                    yp.loadVideoById(video.id, 0);
-                    yp.playVideo();
-                }
-            },
-
-            play_all: function () {
-                if (playlist.length() > 0) {
-                    current = 0;
-                    yp.unMute();
-                    yp.setVolume(100);
-                    controls.play(playlist.get(current));
-                }
-            },
-
-            next: function () {
-                // Have we arrived at the last video in the list?
-                if (playlist.length() == (current + 1)) {
-                    yp.clearVideo();
-
-                    return;
-                }
-                current++;
-                yp.clearVideo();
-                Register.INTERRUPT = true;
-                controls.play(playlist.get(current));
-                console.log('next: ' + current + ' ' + playlist.get(current).id);
-            },
-
-            prev: function () {
-                // Let's do a cyclic player
-                current--;
-                if (current < 0) {
-                    current = 0;
-                }
-                Register.INTERRUPT = true;
-                controls.play(playlist.get(current));
-                console.log('prev: ' + current + ' ' + playlist.get(current).id);
-            },
-
-            stop: function () {
-                Register.STOPPED = true;
-                yp.stopVideo();
-                yp.clearVideo();
-            },
-
-            pause: function () {
-                yp.pauseVideo();
+        play: function (video) {
+            console.log('playing: '+ this.current + ' ' + video.id);
+            if (this.yp) {
+                this.yp.loadVideoById(video.id, 0);
+                this.yp.playVideo();
             }
-        };
+        },
 
-        return {
-            start: function () {
-                setup(); 
-            },
+        play_all: function () {
+            console.log(this);
 
-            play: function (video_id) {
-                controls.play(video_id); 
-            },
-
-            play_all: function () {
-                controls.play_all(); 
-            },
-            
-            next: function () {
-                controls.next(); 
-            },
-
-            stop: function () { 
-                controls.stop(); 
-            },
-
-            pause: function () {
-                controls.pause();
-            },
-
-            call_on_ready: function (func) {
-                on_ready_callbacks.push(func); 
-            },
-
-            update: function (state) {
-                status_quo(state); 
+            if (this.playlist.length() > 0) {
+                this.current = 0;
+                this.yp.unMute();
+                this.yp.setVolume(100);
+                this.play(this.playlist.get(this.current));
             }
+        },
+
+        next: function () {
+            // Have we arrived at the last video in the list?
+            if (this.playlist.length() === (this.current + 1)) {
+                this.yp.clearVideo();
+
+                return;
+            }
+            this.current++;
+            this.yp.clearVideo();
+            this.Register.INTERRUPT = true;
+            this.play(this.playlist.get(this.current));
+            console.log('next: ' + this.current + ' ' + this.playlist.get(this.current).id);
+        },
+
+        prev: function () {
+            // Let's do a cyclic player
+            this.current--;
+            if (this.current < 0) {
+                this.current = 0;
+            }
+            this.Register.INTERRUPT = true;
+            this.play(this.playlist.get(this.current));
+            console.log('prev: ' + this.current + ' ' + this.playlist.get(this.current).id);
+        },
+
+        stop: function () {
+            this.Register.STOPPED = true;
+            this.yp.stopVideo();
+            this.yp.clearVideo();
+        },
+
+        pause: function () {
+            this.yp.pauseVideo();
+        },
+
+        init: function (options) {
+            this.yp = options.yp_id;
+            this.container = options.container;
+            this.playlist = options.playlist;
+            this.on_error_callback = options.error_callback;
+            this.on_status_update_callback = options.status_update_callback;
+            this.attach_events(options.buttons);
+        },
+
+        start: function () {
+            this.yp = document.getElementById(this.yp);
+            this.yp.addEventListener("onStateChange", this.on_status_update_callback);
+            this.yp.addEventListener("onError", this.on_error_callback);
+        },
+
+        call_on_ready: function (func) {
+            this.on_ready_callbacks.push(func); 
+        },
+
+        update: function (state) {
+            this.status_quo(state); 
         }
     };
+
+    yuplay.player = new yuplay_player();
+
 
 })();
