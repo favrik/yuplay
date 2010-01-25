@@ -20,14 +20,8 @@ if (isset($_GET['tests']) and $_GET['tests'] == 1) {
 </head>
 <body>
 <div id="wrapper" class="clearfix">
-    <div id="controller">
-    <a href="<?php echo $wp; ?>">Home</a> &nbsp;&nbsp; | &nbsp;&nbsp;
-        <a href="<?php echo $wp; ?>?tests=<?php echo (int) !$testing; ?>"><?php echo $test_text; ?> Javascript Tests</a> &nbsp;&nbsp;
-    </div>
-    <div id="intro" class="clearfix">
-        <h1><a href="<?php echo $wp; ?>">YuPlay</a></h1>
-        <div id="form">
-        <p><strong>Search</strong> YouTube videos, create playlists, and play!</p>
+
+        <div id="form" class="clearfix">
         <form id="yuplay" action="">
             <fieldset>
                 <input type="text" id="search" value="" disabled="disabled" name="search" size="40" />
@@ -35,8 +29,10 @@ if (isset($_GET['tests']) and $_GET['tests'] == 1) {
             </fieldset>
         </form>
         </div>
-    </div>
+
+
     <div id="video_playlist">
+
         <div id="player">
             <div id="ytapiplayer">&nbsp;</div>
         </div>
@@ -59,7 +55,6 @@ if (isset($_GET['tests']) and $_GET['tests'] == 1) {
         </div>
     </div>
     <div id="search_videos">
-
         <div id="status" class="clearfix">
         <img id="loading_image" src="<?php echo $wp; ?>images/loading.gif" alt="Working" />
             <p>W o r k i n g ...</p>
