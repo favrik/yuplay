@@ -279,7 +279,8 @@ yuplay = {
 
             dom = $.DIV({}, 
                 list = $.UL({className: 'clearfix'}, 
-                    yuplay.paginator(data.feed.openSearch$totalResults.$t),
+                    $.LI({className: 'paginator clearfix nomargin'}),
+                    //yuplay.paginator(data.feed.openSearch$totalResults.$t),
                 (function () {
                     var dom       = [],
                         iteration = 0;

@@ -74,9 +74,10 @@ p {
 }
 
 h1 {
-    font-size:          4.5em;
-    line-height:        0.6em;
-    margin:             0 0 .35em 0;
+    font-size:2.5em;
+    color:#00ADEF;
+    font-weight:bold;
+    line-height:1.2em;
 }
 
 h1 a {
@@ -112,21 +113,6 @@ label {
     font-size:          .8em;
 }
 
-
-/* ----------------------------------------------------------------------------
-    Customize Testing Tool from YAHOO
- */
-.yui-log-container {
-    position:           relative;
-}
-
-.yui-log {
-    font-size:          100%;
-}
-
-.yui-log-categoryfilters {
-    display: none;
-}
 
 /* ----------------------------------------------------------------------------
     Clearfix class yay!
@@ -206,7 +192,8 @@ label {
  */
 #wrapper {
     width:              60.9375em; /* 960px; */
-    margin:             1.25em;
+    margin:             1em 1.25em;
+
 }
 
 /* ----------------------------------------------------------------------------
@@ -224,48 +211,30 @@ label {
     width:              37.5em;  /* 580px */
 }
 
-/* ----------------------------------------------------------------------------
-    Testing links
- */
-#controller {
-    background:         #222;
-    color:              #fff;
-    padding:            10px 20px;
-    margin-bottom:20px;
-    display:none;
-}
-
-#controller a {
-    color:              #fff;
-    font-size:          .9em;
-}
-
-
-#intro {
-    padding-bottom:20px;
-}
 
 #search {
     padding:            2px 3px;
-    width:              30.4em;
-}
-
-h1 {
-    float:left;
-    width:3.8em;
-
+    width:              22.4em;
 }
 
 #form {
-    float:left;
-    margin-left: 6.25em;
     width:35.9375em;
+    margin-bottom:1em;
 }
 
 #form p {
     font-size: 1em;
     margin: 0;
 }
+
+#form .logo {
+    float:left;
+}
+
+#form #yuplay {
+    float: left;
+}
+
 /* ----------------------------------------------------------------------------
     Status Text & Animation
  */
@@ -277,6 +246,8 @@ h1 {
     font-size:          1.4em;
     border:             1px solid #ccc;
     background:         #eee;
+    position: static;
+
 }
 
 #status img {
@@ -425,9 +396,11 @@ background: url(yu.png) -195px -28px;
  */
 #play_list_container {
     background:         #fff;
-    width:              85%;
+    width:              100%;
     display:            none;
-    margin:             0 0 0 1em;
+    margin:             0;
+    overflow:           auto;
+    height:             360px;
 }
 
 #play_list_container h2 {
@@ -453,6 +426,7 @@ background: url(yu.png) -195px -28px;
 
 #play_list li {
     padding:            5px 10px;
+    margin-left:        25px;
     font-family:        arial, sans-serif;
     background:         #fff;
     font-size:          .8em;
@@ -465,4 +439,6 @@ background: url(yu.png) -195px -28px;
     background:         #f7f7f7;
 }
 
-
+.nomargin {
+    margin:0 !important;
+}
