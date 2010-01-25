@@ -104,12 +104,21 @@
             $('#play_b').unbind('click').click(function () { context.play_all(); });
         },
 
-        play: function (video) {
-            console.log('playing: '+ this.current + ' ' + video.id);
-            if (this.yp) {
-                this.yp.loadVideoById(video.id, 0);
-                this.yp.playVideo();
+        play: function () {
+            var video = null;
+
+            if (arguments.length > 0) {
+                video = arguments[0];    
             }
+
+            if (video !== null) {
+                console.log('playing: '+ this.current + ' ' + video.id);
+                if (this.yp) {
+                    this.yp.loadVideoById(video.id, 0);
+                }
+            }
+
+            this.yp.playVideo();
         },
 
         play_all: function () {
